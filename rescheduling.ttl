@@ -1,0 +1,199 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/school-system/> .
+
+#################################################################
+# 1. Ontology Definition (클래스 및 속성 정의)
+#################################################################
+
+# --- Classes ---
+ex:Teacher a rdfs:Class .
+ex:HomeroomTeacher rdfs:subClassOf ex:Teacher .
+ex:SpecialistTeacher rdfs:subClassOf ex:Teacher .
+
+ex:Grade a rdfs:Class .
+ex:ClassRoom a rdfs:Class . # 예: 1-1, 6-3
+ex:Subject a rdfs:Class .
+
+ex:TimeSlot a rdfs:Class ;
+    rdfs:comment "물리적인 절대 시간 구간 (시작-종료)" .
+
+ex:ScheduleEntry a rdfs:Class ;
+    rdfs:comment "특정 반의 특정 요일, 특정 교시의 활동" .
+
+# --- Properties ---
+ex:hasHomeroom a rdf:Property ;
+    rdfs:domain ex:HomeroomTeacher ;
+    rdfs:range ex:ClassRoom .
+
+ex:teaches a rdf:Property ;
+    rdfs:domain ex:Teacher ;
+    rdfs:range ex:Subject .
+
+ex:hasPeriod a rdf:Property ; # 몇 교시인지 (1교시, 2교시...)
+    rdfs:range xsd:integer .
+
+ex:atTime a rdf:Property ; # 절대 시간 매핑
+    rdfs:range ex:TimeSlot .
+
+ex:isLunchTime a rdf:Property ;
+    rdfs:range xsd:boolean .
+
+ex:assignedTeacher a rdf:Property ; # 해당 시간에 실제 수업하는 교사
+    rdfs:range ex:Teacher .
+
+#################################################################
+# 2. Reference Data: Grades & Classes (학교 규모 반영)
+#################################################################
+
+# 학년 정의
+ex:Grade1 a ex:Grade ; rdfs:label "1학년" .
+ex:Grade2 a ex:Grade ; rdfs:label "2학년" .
+ex:Grade3 a ex:Grade ; rdfs:label "3학년" .
+ex:Grade4 a ex:Grade ; rdfs:label "4학년" .
+ex:Grade5 a ex:Grade ; rdfs:label "5학년" .
+ex:Grade6 a ex:Grade ; rdfs:label "6학년" .
+
+# 학급 정의 (규모: 1학년 5반, 2학년 4반, 3학년 5반, 4학년 6반, 5학년 5반, 6학년 6반)
+# 예시로 각 학년의 1반과 마지막 반만 코딩 (전체 확장 가능)
+ex:Class_1_1 a ex:ClassRoom ; ex:belongsTo ex:Grade1 ; rdfs:label "1-1" .
+ex:Class_1_5 a ex:ClassRoom ; ex:belongsTo ex:Grade1 ; rdfs:label "1-5" .
+
+ex:Class_2_1 a ex:ClassRoom ; ex:belongsTo ex:Grade2 ; rdfs:label "2-1" .
+ex:Class_2_4 a ex:ClassRoom ; ex:belongsTo ex:Grade2 ; rdfs:label "2-4" .
+
+ex:Class_3_1 a ex:ClassRoom ; ex:belongsTo ex:Grade3 ; rdfs:label "3-1" .
+ex:Class_3_5 a ex:ClassRoom ; ex:belongsTo ex:Grade3 ; rdfs:label "3-5" .
+
+ex:Class_4_1 a ex:ClassRoom ; ex:belongsTo ex:Grade4 ; rdfs:label "4-1" .
+ex:Class_4_6 a ex:ClassRoom ; ex:belongsTo ex:Grade4 ; rdfs:label "4-6" .
+
+ex:Class_5_1 a ex:ClassRoom ; ex:belongsTo ex:Grade5 ; rdfs:label "5-1" .
+ex:Class_5_5 a ex:ClassRoom ; ex:belongsTo ex:Grade5 ; rdfs:label "5-5" .
+
+ex:Class_6_1 a ex:ClassRoom ; ex:belongsTo ex:Grade6 ; rdfs:label "6-1" .
+ex:Class_6_6 a ex:ClassRoom ; ex:belongsTo ex:Grade6 ; rdfs:label "6-6" .
+
+#################################################################
+# 3. Absolute Time Slots (이미지 기반 절대 시간 정의)
+#################################################################
+# 학년군별로 시간이 다르므로, 유니크한 시간 구간을 모두 정의합니다.
+
+# 공통 1교시
+ex:TS_0900_0940 a ex:TimeSlot ; ex:start "09:00" ; ex:end "09:40" .
+
+# 공통 2교시
+ex:TS_0950_1030 a ex:TimeSlot ; ex:start "09:50" ; ex:end "10:30" .
+
+# 3~6학년 3교시
+ex:TS_1040_1120 a ex:TimeSlot ; ex:start "10:40" ; ex:end "11:20" .
+
+# 1~2학년 3교시
+ex:TS_1050_1130 a ex:TimeSlot ; ex:start "10:50" ; ex:end "11:30" .
+
+# 1~2학년 점심시간 (3교시 후)
+ex:TS_1130_1220 a ex:TimeSlot ; ex:start "11:30" ; ex:end "12:20" ; rdfs:label "1~2학년 점심" .
+
+# 3~6학년 4교시
+ex:TS_1130_1210 a ex:TimeSlot ; ex:start "11:30" ; ex:end "12:10" .
+
+# 3~4학년 점심시간 (4교시 후)
+ex:TS_1210_1300 a ex:TimeSlot ; ex:start "12:10" ; ex:end "13:00" ; rdfs:label "3~4학년 점심" .
+
+# 1~2학년 4교시 / 5~6학년 5교시
+ex:TS_1220_1300 a ex:TimeSlot ; ex:start "12:20" ; ex:end "13:00" .
+
+# 1~2학년 5교시 / 3~4학년 5교시
+ex:TS_1300_1340 a ex:TimeSlot ; ex:start "13:00" ; ex:end "13:40" .
+
+# 5~6학년 점심시간 (5교시 후)
+ex:TS_1300_1350 a ex:TimeSlot ; ex:start "13:00" ; ex:end "13:50" ; rdfs:label "5~6학년 점심" .
+
+# 3~4학년 6교시 / 5~6학년 6교시
+ex:TS_1350_1430 a ex:TimeSlot ; ex:start "13:50" ; ex:end "14:30" .
+
+
+#################################################################
+# 4. Schedule Rules (학년별 시수 및 점심시간 로직)
+#################################################################
+
+# --- 1~2학년 스케줄 구조 (월수금 4교시, 화목 5교시 가정 - 요청하신 시수에 맞춤) ---
+# 요일별 시수: 월(4), 화(5), 수(4), 목(5), 금(4)
+
+ex:ScheduleRule_G12 a ex:ScheduleRule ;
+    ex:appliesTo ex:Grade1, ex:Grade2 ;
+    ex:period1 ex:TS_0900_0940 ;
+    ex:period2 ex:TS_0950_1030 ;
+    ex:period3 ex:TS_1050_1130 ;
+    ex:lunch   ex:TS_1130_1220 ; # 점심시간 (보강 불가)
+    ex:period4 ex:TS_1220_1300 ;
+    ex:period5 ex:TS_1300_1340 .
+
+# --- 3~4학년 스케줄 구조 (월(5), 화(6), 수(5), 목(6), 금(5)) ---
+
+ex:ScheduleRule_G34 a ex:ScheduleRule ;
+    ex:appliesTo ex:Grade3, ex:Grade4 ;
+    ex:period1 ex:TS_0900_0940 ;
+    ex:period2 ex:TS_0950_1030 ;
+    ex:period3 ex:TS_1040_1120 ;
+    ex:period4 ex:TS_1130_1210 ;
+    ex:lunch   ex:TS_1210_1300 ; # 점심시간 (보강 불가)
+    ex:period5 ex:TS_1300_1340 ;
+    ex:period6 ex:TS_1350_1430 .
+
+# --- 5~6학년 스케줄 구조 (월(6), 화(6), 수(5), 목(6), 금(5)) ---
+
+ex:ScheduleRule_G56 a ex:ScheduleRule ;
+    ex:appliesTo ex:Grade5, ex:Grade6 ;
+    ex:period1 ex:TS_0900_0940 ;
+    ex:period2 ex:TS_0950_1030 ;
+    ex:period3 ex:TS_1040_1120 ;
+    ex:period4 ex:TS_1130_1210 ;
+    ex:period5 ex:TS_1220_1300 ;
+    ex:lunch   ex:TS_1300_1350 ; # 점심시간 (보강 불가)
+    ex:period6 ex:TS_1350_1430 .
+
+
+#################################################################
+# 5. Teacher Instances (PDF 소스 반영)
+#################################################################
+
+# 전담 교사 등록 (PDF source 1, 2, 3)
+ex:T_KimShinHye a ex:SpecialistTeacher ; rdfs:label "김신혜" ; ex:subject "과학" . # 4학년 과학
+ex:T_JeongJiSu a ex:SpecialistTeacher ; rdfs:label "정지수" ; ex:subject "과학/도덕" . # 3과학, 6도덕
+ex:T_ParkHanSeok a ex:SpecialistTeacher ; rdfs:label "박한석" ; ex:subject "과학/도덕" . # 5과학, 4도덕
+ex:T_JeonSeongGon a ex:SpecialistTeacher ; rdfs:label "전성곤" ; ex:subject "과학" . # 6과학
+ex:T_SongJuYeon a ex:SpecialistTeacher ; rdfs:label "송주연" ; ex:subject "영어" . # 3,6영어
+ex:T_JangWonSeok a ex:SpecialistTeacher ; rdfs:label "장원석" ; ex:subject "체육" . # 6체육
+
+# 담임 교사 (예시)
+ex:T_Homeroom_6_1 a ex:HomeroomTeacher ; ex:hasHomeroom ex:Class_6_1 ; rdfs:label "6-1 담임" .
+
+
+#################################################################
+# 6. Schedule Assignments (결보강 판단의 핵심 데이터)
+#################################################################
+# 예시: 월요일 시간표 일부 구현
+
+# [상황 1] 6학년 1반, 월요일 4교시가 전담(체육-장원석)인 경우
+# -> 6-1 담임 선생님은 이 시간에 수업이 없으므로 '보강 가능'
+
+ex:Entry_Mon_4_6_1 a ex:ScheduleEntry ;
+    ex:dayOfWeek "Monday" ;
+    ex:period 4 ;
+    ex:classRoom ex:Class_6_1 ;
+    ex:atTime ex:TS_1130_1210 ; # 5~6학년 4교시 시간
+    ex:subject "체육" ;
+    ex:assignedTeacher ex:T_JangWonSeok . # 전담교사가 수업함 -> 담임은 빎.
+
+# [상황 2] 3학년 1반, 월요일 점심시간
+# -> 담임 선생님은 급식지도 중이므로 '보강 불가능'
+
+ex:Entry_Mon_Lunch_3_1 a ex:ScheduleEntry ;
+    ex:dayOfWeek "Monday" ;
+    ex:period "Lunch" ;
+    ex:classRoom ex:Class_3_1 ;
+    ex:atTime ex:TS_1210_1300 ; # 3~4학년 점심시간
+    ex:isLunchTime true ;
+    ex:assignedTeacher ex:T_Homeroom_3_1 . # 담임이 지도함 (보강 불가)
