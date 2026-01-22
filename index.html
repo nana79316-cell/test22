@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>거기 누구 없소?</title>
+    <link rel="stylesheet" href="./style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="glass-container">
+        <header class="main-header">
+            <h1><span class="icon">🚀</span> 거기 누구 없소?</h1>
+            <p>보강이 필요한 시간과 학급을 선택하여 가능한 교사를 찾으세요.</p>
+        </header>
+
+        <main class="dashboard">
+            <!-- Search Panel -->
+            <section class="search-panel glass-card">
+                <h2>🔍 조건 검색</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="daySelect">요일 (Day)</label>
+                        <select id="daySelect">
+                            <option value="Monday">월요일 (Monday)</option>
+                            <option value="Tuesday">화요일 (Tuesday)</option>
+                            <option value="Wednesday">수요일 (Wednesday)</option>
+                            <option value="Thursday">목요일 (Thursday)</option>
+                            <option value="Friday">금요일 (Friday)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gradeSelect">학년 (Grade)</label>
+                        <select id="gradeSelect">
+                            <option value="1">1학년</option>
+                            <option value="2">2학년</option>
+                            <option value="3">3학년</option>
+                            <option value="4">4학년</option>
+                            <option value="5">5학년</option>
+                            <option value="6">6학년</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="classSelect">반 (Class)</label>
+                        <select id="classSelect">
+                            <!-- Populated dynamically -->
+                            <option value="1">1반</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startPeriod">시작 교시</label>
+                        <select id="startPeriod">
+                            <option value="1">1교시</option>
+                            <option value="2">2교시</option>
+                            <option value="3">3교시</option>
+                            <option value="4">4교시</option>
+                            <option value="5">5교시</option>
+                            <option value="6">6교시</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endPeriod">마침 교시</label>
+                        <select id="endPeriod">
+                            <option value="1">1교시</option>
+                            <option value="2">2교시</option>
+                            <option value="3">3교시</option>
+                            <option value="4">4교시</option>
+                            <option value="5">5교시</option>
+                            <option value="6">6교시</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="action-area">
+                    <div class="time-preview" id="timePreview">
+                        <span class="label">선택 시간 (절대 시간):</span>
+                        <span class="value" id="absoluteTimeDisplay">--:-- ~ --:--</span>
+                    </div>
+                    <button id="searchBtn" class="btn-primary">검색하기</button>
+                </div>
+            </section>
+
+            <!-- Results Panel -->
+            <section class="results-panel glass-card">
+                <div class="results-header">
+                    <h2>📋 보강 가능 교사 목록</h2>
+                    <span class="badge" id="resultCount">0명 발견</span>
+                </div>
+                <div id="resultsList" class="results-list">
+                    <div class="empty-state">
+                        <p>검색 조건을 입력하고 버튼을 눌러주세요.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+
+</html>

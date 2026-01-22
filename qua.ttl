@@ -1,0 +1,34 @@
+PREFIX ex: <http://example.org/school/>
+
+SELECT ?teacherName ?className ?grade ?reason
+WHERE {
+  # 1. 선생님 정보 조회
+  ?class ex:hasHomeroom ?teacher .
+  ?teacher ex:name ?teacherName .
+  ?class ex:name ?className .
+  ?class ex:grade ?grade .
+
+  # 2. 보강 가능 조건 (전담수업 OR 방과후)
+  {
+    ?specialClass a ex:SpecialistClass ;
+                  ex:day "Mon" ;       # <--- 요일 변경 (Mon/Tue/Wed/Thu/Fri)
+                  ex:period 3 ;        # <--- 교시 변경 (1~6)
+                  ex:class ?class ;
+                  ex:teacher ?st .
+    ?st ex:subject ?subj .
+    BIND(CONCAT("전담수업(", ?subj, ")") AS ?reason)
+  }
+  UNION
+  {
+    ?gradeObj ex:endsAt_Mon ?endPeriod . # <--- 요일 변경 (endsAt_Mon/Tue...)
+    FILTER ( 3 > ?endPeriod )            # <--- 교시 변경 (숫자)
+    BIND("수업종료(방과후)" AS ?reason)
+  }
+  
+  # 3. 점심시간 제외
+  FILTER NOT EXISTS {
+    ?gradeObj ex:lunchPeriod ?lunch .
+    FILTER ( ?lunch = 3 )                # <--- 교시 변경 (숫자)
+  }
+}
+ORDER BY ?grade ?className
